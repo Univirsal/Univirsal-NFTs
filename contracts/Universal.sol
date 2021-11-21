@@ -3,8 +3,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Universal is ERC721 {
+
+contract Universal is ERC721, Ownable {
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -16,15 +19,20 @@ contract Universal is ERC721 {
       return tokenURIs[tokenId];
     }
 
-    function create(address player, string memory mytokenURI)
+    function updateTokenTRI(uint _tokenId, string memory _tokenURI) public onlyOwner{
+        tokenURIs[_tokenId] = _tokenURI;
+    }
+
+    function mint(address player, string memory _tokenURI)
         public
+        onlyOwner
         returns (uint256)
     {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
         _mint(player, newItemId);
-        tokenURIs[newItemId] = mytokenURI;
+        tokenURIs[newItemId] = _tokenURI;
         //_setTokenURI(newItemId, tokenURI);
 
         return newItemId;
